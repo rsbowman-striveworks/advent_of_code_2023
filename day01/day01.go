@@ -21,7 +21,7 @@ var digitStrings = []string{
 	"nine",
 }
 
-func scanLine(line string) (value int, remainingText string) {
+func nextNumber(line string) (value int, remainingText string) {
 	if len(line) <= 0 {
 		return -1, ""
 	}
@@ -41,6 +41,36 @@ func scanLine(line string) (value int, remainingText string) {
 	return -1, line[1:]
 }
 
+func scanLine(line string, lineNum int) int {
+	var lastValue *int = nil
+	// firstValue := 0
+	// origLine := line
+	lineSum := 0
+	for {
+		v, newLine := nextNumber(line)
+		line = newLine
+
+		if v >= 0 {
+			if lastValue == nil {
+				// first number on this line
+				lineSum += v * 10
+				// firstValue = v
+			}
+			lastValue = &v
+		}
+
+		if len(line) <= 0 {
+			if lastValue == nil {
+				fmt.Fprintf(os.Stderr, "no rune on line %d\n", lineNum);
+				os.Exit(1)
+			}
+
+			// fmt.Printf("%-*s - %d + %d\n", 50, origLine, firstValue, *lastValue)
+			return lineSum + *lastValue
+		}
+	}
+}
+
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	lineNum := 0
@@ -48,36 +78,8 @@ func main() {
 	var line string
 
 	for scanner.Scan() {
-		var lastValue *int = nil
-		// firstValue := 0
 		line = scanner.Text()
-		// origLine := line
-
-
-		for {
-			v, newLine := scanLine(line)
-			line = newLine
-
-			if v >= 0 {
-				if lastValue == nil {
-					// first number on this line
-					sum += v * 10
-					// firstValue = v
-				}
-				lastValue = &v
-			}
-
-			if len(line) <= 0 {
-				if lastValue == nil {
-					fmt.Fprintf(os.Stderr, "no rune on line %d\n", lineNum);
-					os.Exit(1)
-				}
-
-				// fmt.Printf("%-*s - %d + %d\n", 50, origLine, firstValue, *lastValue)
-				sum += *lastValue
-				break
-			}
-		}
+		sum += scanLine(line, lineNum)
 		lineNum += 1
 	}
 
