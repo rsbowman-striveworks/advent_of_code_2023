@@ -34,6 +34,7 @@ func nextNumber(line string) (value int, remainingText string) {
 		if strings.HasPrefix(line, digitString) {
 			// handle "eightwo" and "sevenine" with the -1; by examinataion
 			// these are the only overlapping cases
+			// except for "twone" and "eighthree" and whatever others I mean
 			return i, line[len(digitString) - 1:]
 		}
 	}
